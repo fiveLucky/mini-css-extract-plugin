@@ -43,8 +43,17 @@
     "linkType": {
       "anyOf": [
         {
-          "enum": ["text/css"]
+          "enum": [
+            "text/css"
+          ]
         },
+        {
+          "type": "boolean"
+        }
+      ]
+    },
+    "sortModules": {
+      "anyOf": [
         {
           "type": "boolean"
         }

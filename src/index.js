@@ -74,9 +74,8 @@ class MiniCssExtractPlugin {
       }
 
       readableIdentifier(requestShortener) {
-        return `css ${requestShortener.shorten(this._identifier)}${
-          this._identifierIndex ? ` (${this._identifierIndex})` : ''
-        }`;
+        return `css ${requestShortener.shorten(this._identifier)}${this._identifierIndex ? ` (${this._identifierIndex})` : ''
+          }`;
       }
 
       // eslint-disable-next-line class-methods-use-this
@@ -309,7 +308,7 @@ class MiniCssExtractPlugin {
     this._sortedModulesCache = new WeakMap();
 
     this.options = Object.assign(
-      { filename: DEFAULT_FILENAME, ignoreOrder: false },
+      { filename: DEFAULT_FILENAME, ignoreOrder: false, sortModules: true },
       options
     );
 
@@ -353,7 +352,7 @@ class MiniCssExtractPlugin {
     const webpack = compiler.webpack
       ? compiler.webpack
       : // eslint-disable-next-line global-require
-        require('webpack');
+      require('webpack');
 
     // TODO bug in webpack, remove it after it will be fixed
     // webpack tries to `require` loader firstly when serializer doesn't found
@@ -389,7 +388,7 @@ class MiniCssExtractPlugin {
       compiler.webpack && compiler.webpack.NormalModule
         ? compiler.webpack.NormalModule
         : // eslint-disable-next-line global-require
-          require('webpack/lib/NormalModule');
+        require('webpack/lib/NormalModule');
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
       const normalModuleHook =
@@ -418,7 +417,7 @@ class MiniCssExtractPlugin {
 
       class CssDependencyTemplate {
         // eslint-disable-next-line class-methods-use-this
-        apply() {}
+        apply() { }
       }
 
       compilation.dependencyTemplates.set(
@@ -571,17 +570,17 @@ class MiniCssExtractPlugin {
         const { outputOptions, chunkGraph } = compilation;
         const modules = isWebpack4
           ? Array.from(this.getChunkModules(chunk, chunkGraph)).filter(
-              (module) => module.type === MODULE_TYPE
-            )
+            (module) => module.type === MODULE_TYPE
+          )
           : this.sortModules(
-              compilation,
+            compilation,
+            chunk,
+            chunkGraph.getChunkModulesIterableBySourceType(
               chunk,
-              chunkGraph.getChunkModulesIterableBySourceType(
-                chunk,
-                MODULE_TYPE
-              ),
-              compilation.runtimeTemplate.requestShortener
-            );
+              MODULE_TYPE
+            ),
+            compilation.runtimeTemplate.requestShortener
+          );
 
         if (modules) {
           const { hashFunction, hashDigest, hashDigestLength } = outputOptions;
@@ -721,22 +720,22 @@ class MiniCssExtractPlugin {
                     'var linkTag = document.createElement("link");',
                     this.runtimeOptions.attributes
                       ? Template.asString(
-                          Object.entries(this.runtimeOptions.attributes).map(
-                            (entry) => {
-                              const [key, value] = entry;
+                        Object.entries(this.runtimeOptions.attributes).map(
+                          (entry) => {
+                            const [key, value] = entry;
 
-                              return `linkTag.setAttribute(${JSON.stringify(
-                                key
-                              )}, ${JSON.stringify(value)});`;
-                            }
-                          )
+                            return `linkTag.setAttribute(${JSON.stringify(
+                              key
+                            )}, ${JSON.stringify(value)});`;
+                          }
                         )
+                      )
                       : '',
                     'linkTag.rel = "stylesheet";',
                     this.runtimeOptions.linkType
                       ? `linkTag.type = ${JSON.stringify(
-                          this.runtimeOptions.linkType
-                        )};`
+                        this.runtimeOptions.linkType
+                      )};`
                       : '',
                     'var onLinkComplete = function (event) {',
                     Template.indent([
@@ -763,25 +762,25 @@ class MiniCssExtractPlugin {
                     'linkTag.href = fullhref;',
                     crossOriginLoading
                       ? Template.asString([
-                          `if (linkTag.href.indexOf(window.location.origin + '/') !== 0) {`,
-                          Template.indent(
-                            `linkTag.crossOrigin = ${JSON.stringify(
-                              crossOriginLoading
-                            )};`
-                          ),
-                          '}',
-                        ])
+                        `if (linkTag.href.indexOf(window.location.origin + '/') !== 0) {`,
+                        Template.indent(
+                          `linkTag.crossOrigin = ${JSON.stringify(
+                            crossOriginLoading
+                          )};`
+                        ),
+                        '}',
+                      ])
                       : '',
                     typeof this.runtimeOptions.insert !== 'undefined'
                       ? typeof this.runtimeOptions.insert === 'function'
                         ? `(${this.runtimeOptions.insert.toString()})(linkTag)`
                         : Template.asString([
-                            `var target = document.querySelector("${this.runtimeOptions.insert}");`,
-                            `target.parentNode.insertBefore(linkTag, target.nextSibling);`,
-                          ])
+                          `var target = document.querySelector("${this.runtimeOptions.insert}");`,
+                          `target.parentNode.insertBefore(linkTag, target.nextSibling);`,
+                        ])
                       : Template.asString([
-                          'document.head.appendChild(linkTag);',
-                        ]),
+                        'document.head.appendChild(linkTag);',
+                      ]),
                   ]),
                   '}).then(function() {',
                   Template.indent(['installedCssChunks[chunkId] = 0;']),
@@ -854,22 +853,22 @@ class MiniCssExtractPlugin {
                   'var linkTag = document.createElement("link");',
                   this.runtimeOptions.attributes
                     ? Template.asString(
-                        Object.entries(this.runtimeOptions.attributes).map(
-                          (entry) => {
-                            const [key, value] = entry;
+                      Object.entries(this.runtimeOptions.attributes).map(
+                        (entry) => {
+                          const [key, value] = entry;
 
-                            return `linkTag.setAttribute(${JSON.stringify(
-                              key
-                            )}, ${JSON.stringify(value)});`;
-                          }
-                        )
+                          return `linkTag.setAttribute(${JSON.stringify(
+                            key
+                          )}, ${JSON.stringify(value)});`;
+                        }
                       )
+                    )
                     : '',
                   'linkTag.rel = "stylesheet";',
                   this.runtimeOptions.linkType
                     ? `linkTag.type = ${JSON.stringify(
-                        this.runtimeOptions.linkType
-                      )};`
+                      this.runtimeOptions.linkType
+                    )};`
                     : '',
                   `var onLinkComplete = ${runtimeTemplate.basicFunction(
                     'event',
@@ -896,25 +895,25 @@ class MiniCssExtractPlugin {
                   'linkTag.href = fullhref;',
                   crossOriginLoading
                     ? Template.asString([
-                        `if (linkTag.href.indexOf(window.location.origin + '/') !== 0) {`,
-                        Template.indent(
-                          `linkTag.crossOrigin = ${JSON.stringify(
-                            crossOriginLoading
-                          )};`
-                        ),
-                        '}',
-                      ])
+                      `if (linkTag.href.indexOf(window.location.origin + '/') !== 0) {`,
+                      Template.indent(
+                        `linkTag.crossOrigin = ${JSON.stringify(
+                          crossOriginLoading
+                        )};`
+                      ),
+                      '}',
+                    ])
                     : '',
                   typeof this.runtimeOptions.insert !== 'undefined'
                     ? typeof this.runtimeOptions.insert === 'function'
                       ? `(${this.runtimeOptions.insert.toString()})(linkTag)`
                       : Template.asString([
-                          `var target = document.querySelector("${this.runtimeOptions.insert}");`,
-                          `target.parentNode.insertBefore(linkTag, target.nextSibling);`,
-                        ])
+                        `var target = document.querySelector("${this.runtimeOptions.insert}");`,
+                        `target.parentNode.insertBefore(linkTag, target.nextSibling);`,
+                      ])
                     : Template.asString([
-                        'document.head.appendChild(linkTag);',
-                      ]),
+                      'document.head.appendChild(linkTag);',
+                    ]),
                   'return linkTag;',
                 ]
               )};`,
@@ -953,92 +952,90 @@ class MiniCssExtractPlugin {
               )}`,
               withLoading
                 ? Template.asString([
-                    '// object to store loaded CSS chunks',
-                    'var installedCssChunks = {',
-                    Template.indent(
-                      chunk.ids
-                        .map((id) => `${JSON.stringify(id)}: 0`)
-                        .join(',\n')
-                    ),
-                    '};',
-                    '',
-                    `${
-                      RuntimeGlobals.ensureChunkHandlers
-                    }.miniCss = ${runtimeTemplate.basicFunction(
-                      'chunkId, promises',
-                      [
-                        `var cssChunks = ${JSON.stringify(chunkMap)};`,
-                        'if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);',
-                        'else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {',
-                        Template.indent([
-                          `promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(${runtimeTemplate.basicFunction(
-                            '',
-                            'installedCssChunks[chunkId] = 0;'
-                          )}, ${runtimeTemplate.basicFunction('e', [
-                            'delete installedCssChunks[chunkId];',
-                            'throw e;',
-                          ])}));`,
-                        ]),
-                        '}',
-                      ]
-                    )};`,
-                  ])
+                  '// object to store loaded CSS chunks',
+                  'var installedCssChunks = {',
+                  Template.indent(
+                    chunk.ids
+                      .map((id) => `${JSON.stringify(id)}: 0`)
+                      .join(',\n')
+                  ),
+                  '};',
+                  '',
+                  `${RuntimeGlobals.ensureChunkHandlers
+                  }.miniCss = ${runtimeTemplate.basicFunction(
+                    'chunkId, promises',
+                    [
+                      `var cssChunks = ${JSON.stringify(chunkMap)};`,
+                      'if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);',
+                      'else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {',
+                      Template.indent([
+                        `promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(${runtimeTemplate.basicFunction(
+                          '',
+                          'installedCssChunks[chunkId] = 0;'
+                        )}, ${runtimeTemplate.basicFunction('e', [
+                          'delete installedCssChunks[chunkId];',
+                          'throw e;',
+                        ])}));`,
+                      ]),
+                      '}',
+                    ]
+                  )};`,
+                ])
                 : '// no chunk loading',
               '',
               withHmr
                 ? Template.asString([
-                    'var oldTags = [];',
-                    'var newTags = [];',
-                    `var applyHandler = ${runtimeTemplate.basicFunction(
-                      'options',
-                      [
-                        `return { dispose: ${runtimeTemplate.basicFunction('', [
-                          'for(var i = 0; i < oldTags.length; i++) {',
-                          Template.indent([
-                            'var oldTag = oldTags[i];',
-                            'if(oldTag.parentNode) oldTag.parentNode.removeChild(oldTag);',
-                          ]),
-                          '}',
-                          'oldTags.length = 0;',
-                        ])}, apply: ${runtimeTemplate.basicFunction('', [
-                          'for(var i = 0; i < newTags.length; i++) newTags[i].rel = "stylesheet";',
-                          'newTags.length = 0;',
-                        ])} };`,
-                      ]
-                    )}`,
-                    `${
-                      RuntimeGlobals.hmrDownloadUpdateHandlers
-                    }.miniCss = ${runtimeTemplate.basicFunction(
-                      'chunkIds, removedChunks, removedModules, promises, applyHandlers, updatedModulesList',
-                      [
-                        'applyHandlers.push(applyHandler);',
-                        `chunkIds.forEach(${runtimeTemplate.basicFunction(
-                          'chunkId',
-                          [
-                            `var href = ${RuntimeGlobals.require}.miniCssF(chunkId);`,
-                            `var fullhref = ${RuntimeGlobals.publicPath} + href;`,
-                            'const oldTag = findStylesheet(href, fullhref);',
-                            'if(!oldTag) return;',
-                            `promises.push(new Promise(${runtimeTemplate.basicFunction(
-                              'resolve, reject',
-                              [
-                                `var tag = createStylesheet(chunkId, fullhref, ${runtimeTemplate.basicFunction(
-                                  '',
-                                  [
-                                    'tag.as = "style";',
-                                    'tag.rel = "preload";',
-                                    'resolve();',
-                                  ]
-                                )}, reject);`,
-                                'oldTags.push(oldTag);',
-                                'newTags.push(tag);',
-                              ]
-                            )}));`,
-                          ]
-                        )});`,
-                      ]
-                    )}`,
-                  ])
+                  'var oldTags = [];',
+                  'var newTags = [];',
+                  `var applyHandler = ${runtimeTemplate.basicFunction(
+                    'options',
+                    [
+                      `return { dispose: ${runtimeTemplate.basicFunction('', [
+                        'for(var i = 0; i < oldTags.length; i++) {',
+                        Template.indent([
+                          'var oldTag = oldTags[i];',
+                          'if(oldTag.parentNode) oldTag.parentNode.removeChild(oldTag);',
+                        ]),
+                        '}',
+                        'oldTags.length = 0;',
+                      ])}, apply: ${runtimeTemplate.basicFunction('', [
+                        'for(var i = 0; i < newTags.length; i++) newTags[i].rel = "stylesheet";',
+                        'newTags.length = 0;',
+                      ])} };`,
+                    ]
+                  )}`,
+                  `${RuntimeGlobals.hmrDownloadUpdateHandlers
+                  }.miniCss = ${runtimeTemplate.basicFunction(
+                    'chunkIds, removedChunks, removedModules, promises, applyHandlers, updatedModulesList',
+                    [
+                      'applyHandlers.push(applyHandler);',
+                      `chunkIds.forEach(${runtimeTemplate.basicFunction(
+                        'chunkId',
+                        [
+                          `var href = ${RuntimeGlobals.require}.miniCssF(chunkId);`,
+                          `var fullhref = ${RuntimeGlobals.publicPath} + href;`,
+                          'const oldTag = findStylesheet(href, fullhref);',
+                          'if(!oldTag) return;',
+                          `promises.push(new Promise(${runtimeTemplate.basicFunction(
+                            'resolve, reject',
+                            [
+                              `var tag = createStylesheet(chunkId, fullhref, ${runtimeTemplate.basicFunction(
+                                '',
+                                [
+                                  'tag.as = "style";',
+                                  'tag.rel = "preload";',
+                                  'resolve();',
+                                ]
+                              )}, reject);`,
+                              'oldTags.push(oldTag);',
+                              'newTags.push(tag);',
+                            ]
+                          )}));`,
+                        ]
+                      )});`,
+                    ]
+                  )}`,
+                ])
                 : '// no hmr',
             ]);
           }
@@ -1100,9 +1097,9 @@ class MiniCssExtractPlugin {
   getChunkModules(chunk, chunkGraph) {
     return typeof chunkGraph !== 'undefined'
       ? chunkGraph.getOrderedChunkModulesIterable(
-          chunk,
-          compareModulesByIdentifier
-        )
+        chunk,
+        compareModulesByIdentifier
+      )
       : chunk.modulesIterable;
   }
 
@@ -1150,17 +1147,22 @@ class MiniCssExtractPlugin {
       // This loop also gathers dependencies from the ordered lists
       // Lists are in reverse order to allow to use Array.pop()
       const modulesByChunkGroup = Array.from(chunk.groupsIterable, (cg) => {
-        const sortedModules = modulesList
-          .map((m) => {
-            return {
-              module: m,
-              index: cg[moduleIndexFunctionName](m),
-            };
-          })
-          // eslint-disable-next-line no-undefined
-          .filter((item) => item.index !== undefined)
-          .sort((a, b) => b.index - a.index)
-          .map((item) => item.module);
+        let sortedModules = modulesList.map(m => {
+          return {
+            module: m,
+            index: cg[moduleIndexFunctionName](m)
+          };
+        }) // eslint-disable-next-line no-undefined
+          .filter(item => item.index !== undefined)
+        if (this.options.sortModules) {
+          sortedModules = sortedModules
+            .sort((a, b) => b.index - a.index)
+            .map(item => item.module);
+        } else {
+          sortedModules = sortedModules
+            .map(item => item.module);
+        }
+
 
         for (let i = 0; i < sortedModules.length; i++) {
           const set = moduleDependencies.get(sortedModules[i]);
@@ -1247,7 +1249,7 @@ class MiniCssExtractPlugin {
                       ` * ${m.readableIdentifier(requestShortener)}`,
                       `   - couldn't fulfill desired order of chunk group(s) ${failedChunkGroups}`,
                       goodChunkGroups &&
-                        `   - while fulfilling desired order of chunk group(s) ${goodChunkGroups}`,
+                      `   - while fulfilling desired order of chunk group(s) ${goodChunkGroups}`,
                     ]
                       .filter(Boolean)
                       .join('\n');
@@ -1265,7 +1267,9 @@ class MiniCssExtractPlugin {
       // (to avoid a breaking change)
       // TODO remove this in next major version
       // and increase minimum webpack version to 4.12.0
-      modulesList.sort((a, b) => a.index2 - b.index2);
+      if (this.options.sortModules) {
+        modulesList.sort((a, b) => a.index2 - b.index2);
+      }
       usedModules = modulesList;
     }
 
@@ -1286,7 +1290,7 @@ class MiniCssExtractPlugin {
     const { ConcatSource, SourceMapSource, RawSource } = compiler.webpack
       ? compiler.webpack.sources
       : // eslint-disable-next-line global-require
-        require('webpack-sources');
+      require('webpack-sources');
 
     const source = new ConcatSource();
     const externalsSource = new ConcatSource();
